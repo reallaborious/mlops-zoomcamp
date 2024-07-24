@@ -92,7 +92,8 @@ networkx==3.3
 notebook==7.2.1
 notebook_shim==0.2.4
 numpy==1.26.4
-nvidia-nccl-cu12==2.22.3
+# it's a package. For windows install nvidia-pyindex
+# nvidia-nccl-cu12==2.22.3
 opentelemetry-api==1.25.0
 opentelemetry-sdk==1.25.0
 opentelemetry-semantic-conventions==0.46b0
