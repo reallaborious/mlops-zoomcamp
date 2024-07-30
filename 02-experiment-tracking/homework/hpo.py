@@ -17,17 +17,6 @@ def load_pickle(filename: str):
         return pickle.load(f_in)
 
 
-@click.command()
-@click.option(
-    "--data_path",
-    default="./output",
-    help="Location where the processed NYC taxi trip data was saved"
-)
-@click.option(
-    "--num_trials",
-    default=15,
-    help="The number of parameter evaluations for the optimizer to explore"
-)
 def run_optimization(data_path: str, num_trials: int):
 
     X_train, y_train = load_pickle(os.path.join(data_path, "train.pkl"))
@@ -35,6 +24,7 @@ def run_optimization(data_path: str, num_trials: int):
 
     def objective(params):
 
+        mlflow.autolog()
         rf = RandomForestRegressor(**params)
         rf.fit(X_train, y_train)
         y_pred = rf.predict(X_val)
@@ -51,7 +41,7 @@ def run_optimization(data_path: str, num_trials: int):
     }
 
     rstate = np.random.default_rng(42)  # for reproducible results
-    fmin(
+    best_result = fmin(
         fn=objective,
         space=search_space,
         algo=tpe.suggest,
@@ -59,7 +49,20 @@ def run_optimization(data_path: str, num_trials: int):
         trials=Trials(),
         rstate=rstate
     )
+    return best_result
 
+@click.command()
+@click.option(
+    "--data_path",
+    default="./output",
+    help="Location where the processed NYC taxi trip data was saved"
+)
+@click.option(
+    "--num_trials",
+    default=15,
+    help="The number of parameter evaluations for the optimizer to explore"
+)
+def run_optimization_cli(**kwargs): print(run_optimization(**kwargs))
 
 if __name__ == '__main__':
     run_optimization()

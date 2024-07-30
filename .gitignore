@@ -164,3 +164,4 @@ mlops-zoomcamp
 02-experiment-tracking/preprocessor
 *.db
 *.pem
+Anaconda*.sh
