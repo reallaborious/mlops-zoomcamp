@@ -165,3 +165,4 @@ mlops-zoomcamp
 *.db
 *.pem
 Anaconda*.sh
+*.exe
