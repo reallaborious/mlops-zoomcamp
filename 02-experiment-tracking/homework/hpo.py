@@ -17,7 +17,7 @@ def load_pickle(filename: str):
         return pickle.load(f_in)
 
 
-def run_optimization(data_path: str, num_trials: int,server_uri: str = "http://127.0.0.1:5000",depth_from: int = 10, depth_to: int = 20,experiment_prefix: str = 'max_depth'):
+def run_optimization(data_path: str, num_trials: int = 15,server_uri: str = "http://127.0.0.1:5000",depth_from: int = 10, depth_to: int = 20,experiment_prefix: str = 'max_depth'):
 
     experiment_name = f'{experiment_prefix}_{depth_from}_{depth_to}_{num_trials}'
     mlflow.set_tracking_uri(server_uri)
@@ -29,14 +29,14 @@ def run_optimization(data_path: str, num_trials: int,server_uri: str = "http://1
 
     def objective(params):
         with mlflow.start_run():
-            mlflow.autolog()
+            mlflow.log_params(params)
             rf = RandomForestRegressor(**params)
             rf.fit(X_train, y_train)
             y_pred = rf.predict(X_val)
             rmse = mean_squared_error(y_val, y_pred, squared=False)
-            run_id=mlflow.active_run().info.run_id
-            # mlflow.log_metric('rmse', rmse)
-        return {'loss': rmse, 'status': STATUS_OK, 'run_id': run_id}
+            #  run_id=mlflow.active_run().info.run_id
+            mlflow.log_metric('rmse', rmse)
+        return {'loss': rmse, 'status': STATUS_OK} #, 'run_id': run_id}
 
     search_space = {
         'max_depth': scope.int(hp.quniform('max_depth', depth_from, depth_to, 1)),
@@ -67,10 +67,9 @@ def run_optimization(data_path: str, num_trials: int,server_uri: str = "http://1
 )
 @click.option(
     "--num_trials",
-    default=15,
     help="The number of parameter evaluations for the optimizer to explore"
 )
 def run_optimization_cli(**kwargs): print(run_optimization(**kwargs))
 
 if __name__ == '__main__':
-    run_optimization()
+    run_optimization_cli()
