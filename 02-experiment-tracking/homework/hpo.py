@@ -19,7 +19,7 @@ def load_pickle(filename: str):
 
 def run_optimization(data_path: str, num_trials: int,server_uri: str = "http://127.0.0.1:5000",depth_from: int = 10, depth_to: int = 20,experiment_prefix: str = 'max_depth'):
 
-    experiment_name = f'{experiment_prefix}_{depth_from}_{depth_to}'
+    experiment_name = f'{experiment_prefix}_{depth_from}_{depth_to}_{num_trials}'
     mlflow.set_tracking_uri(server_uri)
     mlflow.set_experiment(experiment_name)
 
@@ -46,7 +46,7 @@ def run_optimization(data_path: str, num_trials: int,server_uri: str = "http://1
         'random_state': 42
     }
     
-    trials = Trials()
+    # trials = Trials()
     rstate = np.random.default_rng(42)  # for reproducible results
     best_result = fmin(
         fn=objective,
@@ -56,7 +56,7 @@ def run_optimization(data_path: str, num_trials: int,server_uri: str = "http://1
         trials=Trials(),
         rstate=rstate
     )
-    best_result['run_id'] = trials.best_trial['result']['run_id']
+    # best_result['run_id'] = trials.best_trial['result']['run_id']
     return best_result
 
 @click.command()
