@@ -166,3 +166,4 @@ mlops-zoomcamp
 *.pem
 Anaconda*.sh
 *.exe
+**/artifacts_local
